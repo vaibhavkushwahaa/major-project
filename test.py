@@ -1,0 +1,64 @@
+import pandas as pd
+import plotly.express as px                                                  
+import numpy as np
+from prophet import Prophet
+import yfinance as yf
+import matplotlib.pyplot as plt
+from prophet.plot import plot_plotly
+from sklearn.metrics import mean_absolute_error
+import plotly.graph_objects as go
+
+def yahoo_stocks(stock_symbol):
+    stock_data = yf.download(stock_symbol, period='5y',interval='1d')
+    stock_data=stock_data.reset_index()
+    stock_data[['ds','y']] = stock_data[['Date','Adj Close']]                
+    return stock_data
+
+def plot_price(df_whole):
+    fig = px.line(df_whole, x='Date', y='Close')
+    fig.update_xaxes(rangeslider_visible=False)
+    fig.show()
+
+def prediction_model(df_whole):
+    train_data = df_whole.sample(frac=0.8, random_state=0)
+    test_data = df_whole.drop(train_data.index)
+
+    model_1 = Prophet(daily_seasonality=True)
+    model_1.fit(train_data)
+    
+    y_actual = test_data['y']
+    prediction = model_1.predict(pd.DataFrame({'ds': test_data['ds']}))
+    y_predicted = prediction['yhat'].astype(int)
+    mean_absolute_error(y_actual, y_predicted)
+    prediction = model_1.predict(pd.DataFrame({'ds':test_data['ds']}))
+
+    trace_predicted = go.Scatter(x=test_data['ds'], y=y_predicted, mode='lines', name='Predicted', line=dict(color='black'))
+    trace_actual = go.Scatter(x=test_data['ds'], y=y_actual, mode='lines', name='Actual', line=dict(color='yellow'))
+    layout = go.Layout(
+        title="Price Action: Predicted vs Actual",
+        xaxis=dict(title="Year"),
+        yaxis=dict(title="Price Action"),
+        showlegend=True)
+    fig = go.Figure(data=[trace_predicted, trace_actual], layout=layout)
+    fig.show()
+
+def future_prediction(df_whole):
+    model_2 = Prophet()                                                     
+    model_2.fit(df_whole)                                                           
+    future = model_2.make_future_dataframe(365)                                       
+    forecast = model_2.predict(future) 
+    fig = plot_plotly(model_2, forecast)
+    fig.update_xaxes(rangeslider_visible=False)
+    fig.show() 
+    print(forecast[['ds','yhat','yhat_lower','yhat_upper']].tail())
+
+def main():
+    stock = input("Enter stock name(ex:GOOGL, AAPL): ")
+    df_whole = yahoo_stocks(stock)
+    model= Prophet()
+    plot_price(df_whole)   
+    prediction_model(df_whole)
+    future_prediction(df_whole)
+       
+if __name__ == "__main__":
+    main()

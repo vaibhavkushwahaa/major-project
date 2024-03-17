@@ -5,3 +5,7 @@ yfinance
 tensorflow
 keras
 sklearn.preprocessing 
+plotly.express
+prophet
+prophet.plot
+plotly.graph_objects

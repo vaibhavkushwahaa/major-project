@@ -1,6 +1,6 @@
 from flask import Flask, render_template,redirect , request, session, flash
 from database import User,add_to_db, open_db
-
+import os
 
 
 app = Flask(__name__)
@@ -45,6 +45,23 @@ def register():
 
 
     return render_template('register.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/stock/prediction', methods=['GET', 'POST'])
+def stock():
+    if request.method == 'POST':
+        stockname=request.form.get('stockname')
+        # yfinance fetch data
+        model_path =os.path.join(os.getcwd(), 'static','trained_model',f'{stockname}_prediction.h5')
+        if os.path.exists(model_path):
+            print("Model loaded")
+            return render_template('prediction.html')
+        else:
+            print("Model not found")
+    return render_template('stock.html')
 
 if __name__ == '__main__':
   app.run(host='127.0.0.1', port=8000, debug=True)
