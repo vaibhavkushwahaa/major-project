@@ -1,7 +1,24 @@
 {% extends 'layout/base.html' %}
 
 {% block content %} 
-    <h1>Home</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Prediction</title>
+    <!-- Add any necessary CSS stylesheets or CDN links here -->
+</head>
+<body>
+    <h1>Stock Prediction</h1>
+    <form method="post" action="/">
+        <label for="stock">Enter stock name (e.g., GOOGL, AAPL):</label><br>
+        <input type="text" id="stock" name="stock" required><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
+
 {% endblock %}
 
 

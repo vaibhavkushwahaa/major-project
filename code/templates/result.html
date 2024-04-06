@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Prediction Results</title>
+    <!-- Add any necessary CSS stylesheets or CDN links here -->
+</head>
+<body>
+    <h1>Stock Prediction Results</h1>
+    
+    <!-- Plot of historical stock prices -->
+    <h2>Historical Stock Prices</h2>
+    {{ plot_html | safe }} <!-- Plotly plot will be displayed here -->
+
+    <!-- Plot of predicted vs actual prices -->
+    <h2>Predicted vs Actual Prices</h2>
+    {{ prediction_html | safe }} <!-- Plotly plot will be displayed here -->
+    <p>Mean Absolute Error: {{ mae }}</p>
+
+    <!-- Plot of future predicted prices -->
+    <h2>Future Predicted Prices</h2>
+    {{ future_html | safe }} <!-- Plotly plot will be displayed here -->
+
+    <!-- Display last few predictions -->
+    <h2>Last Few Predictions</h2>
+    <table border="1">
+        <tr>
+            <th>Date</th>
+            <th>Predicted Price</th>
+            <th>Lower Bound</th>
+            <th>Upper Bound</th>
+        </tr>
+        {% for index, row in forecast_tail.iterrows() %}
+        <tr>
+            <td>{{ row['ds'] }}</td>
+            <td>{{ row['yhat'] }}</td>
+            <td>{{ row['yhat_lower'] }}</td>
+            <td>{{ row['yhat_upper'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
